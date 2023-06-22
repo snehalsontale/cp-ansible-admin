@@ -1,0 +1,88 @@
+all:
+  vars:
+    ansible_connection: ssh
+    ansible_user: ubuntu
+    ansible_become: true
+    ansible_ssh_private_key_file: snehalkey_ubuntu 20.04.pem
+
+zookeeper:
+  hosts:
+    ip-172-32-62-99.us-west-2.compute.internal:
+    ip-172-32-92-44.us-west-2.compute.internal:
+
+kafka_broker:
+  hosts:
+    ip-172-32-63-81.us-west-2.compute.internal:
+    ip-172-32-78-247.us-west-2.compute.internal:
+    ip-172-32-83-112.us-west-2.compute.internal:
+schema_registry:
+  hosts:
+    ip-172-32-58-49.us-west-2.compute.internal:
+
+
+ksql:
+  hosts:
+    ip-172-32-57-115.us-west-2.compute.internal:
+
+kafka_connect:
+  hosts:
+    ip-172-32-51-114.us-west-2.compute.internal:
+control_center:
+  hosts:
+    ip-172-32-63-171.us-west-2.compute.internal:
+
+all:
+  vars:
+    ansible_become: false
+    # configure connectivity for topics management
+    rest_server_url: http://kafka-0.snehal.bootcamp-americas.confluent.io:8090
+    #rest_user: user
+    #rest_user_password: user-secret
+
+    # get cluster id >confluent cluster describe --url https://url:<port> -ojson | jq -r '.crn'      
+    cluster_id: X7tDu93vScGpTOancaAdpg
+# properties for Kafka command line use - needed only for partitions_count increase and quota management     
+    kafka_broker_hostname: kafka-0.snehal.bootcamp-americas.confluent.io
+    kafka_broker_port: 9091
+
+    # add configuration file details for client connectivity to the cluster    
+#kafka_broker_client_config_file: ./settings/client.properties
+# provide secrets protection key if applicable    
+#secrets_protection_masterkey: blahblah
+# path to binaries    
+# binary_base_path: /home/confluent/confluent-7.0.1    
+
+    # topics delete is disabled by default
+    topic_delete_enabled: false
+    # partitions management disabled by default
+    
+        topic_partitions_enabled: false
+    # prefix when embedded proxy is used
+    #topic_cluster_prefix: "/kafka"
+    # list regex representing all topics you want to be left alone
+    topic_protected: ^_confluent.*|^connect.*|^ksql.*|_schemas|^confluent.*
+    # regex representing whitelisted topics
+    topic_whitelist: ^test.*
+# if you want current state dumped to a file enable the following and set the file path    
+#   topic_dump_file: false
+#    topic_dump_destination: /tmp/topic_dump_out.yml    
+
+# sample desired topics state structure      
+    topics:
+# here is config change - value change and value delete    
+      - topic_name: test2
+        partitions_count: 2
+        replication_factor: 2
+        configs:
+          - name: min.insync.replicas
+            value: "2"
+          - name: retention.ms
+            value: "100480000"
+            #  - topic_name: test3
+# here is partitions_count increase      
+# partitions_count: 1
+#        replication_factor: 3
+#        configs:
+#          - name: min.insync.replicas
+#            value: "1"
+                                                                                                                                                                                                    
